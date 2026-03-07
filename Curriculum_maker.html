@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Curriculum Generator - 교육 커리큘럼 생성기</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+</head>
+<body>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --primary: #0066CC;
+  --primary-light: #00A5E5;
+  --primary-dark: #003D7A;
+  --bg-main: #F5F8FC;
+  --bg-white: #FFFFFF;
+  --accent-orange: #FF6B00;
+  --accent-green: #00B67A;
+  --text-primary: #1A1A2E;
+  --text-secondary: #5A6070;
+  --text-light: #8A90A0;
+  --border: #E2E8F0;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --danger: #dc2626;
+  --danger-light: #fee2e2;
+}
+
+body {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  background: var(--bg-main);
+  color: var(--text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.calculator-wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 20px 60px;
+}
+
+/* ─── Header ─── */
+.calc-header {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  border-radius: var(--radius-lg);
+  padding: 36px 40px;
+  margin-bottom: 28px;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.calc-header::after {
+  content: '';
+  position: absolute;
+  top: -40%; right: -10%;
+  width: 300px; height: 300px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 50%;
+}
+.header-text { position: relative; z-index: 1; flex: 1; }
+.calc-header h1 { font-size: 26px; font-weight: 700; margin-bottom: 6px; letter-spacing: -0.5px; }
+.calc-header .subtitle { font-size: 14px; opacity: 0.8; font-weight: 400; }
+.header-badge {
+  display: inline-block;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 20px; padding: 4px 14px;
+  font-size: 12px; font-weight: 500; margin-bottom: 12px;
+}
+.header-illustration {
+  position: relative; z-index: 1; flex-shrink: 0;
+  width: 180px; height: 160px; opacity: 0.92;
+}
+
+/* ─── Section Card ─── */
+.section-card {
+  background: var(--bg-white);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  padding: 28px 32px;
+  margin-bottom: 20px;
+}
+.section-title {
+  font-size: 17px; font-weight: 700; color: var(--text-primary);
+  margin-bottom: 20px; display: flex; align-items: center; gap: 8px;
+}
+.section-title .icon {
+  width: 28px; height: 28px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0;
+}
+.icon-blue { background: #E8F4FD; color: var(--primary); }
+
+/* ─── Input ─── */
+.input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.input-group { display: flex; flex-direction: column; gap: 6px; }
+.input-group.full-width { grid-column: 1 / -1; }
+.input-label { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+.input-hint { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+.input-field {
+  width: 100%; padding: 10px 14px;
+  border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  font-size: 15px; font-family: inherit; color: var(--text-primary);
+  transition: border-color 0.2s, box-shadow 0.2s; background: #FAFBFC;
+}
+.input-field:focus {
+  outline: none; border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0,102,204,0.1); background: #fff;
+}
+.input-field::placeholder { color: var(--text-light); }
+textarea.input-field { resize: vertical; min-height: 80px; }
+select.input-field { cursor: pointer; }
+
+/* ─── Button ─── */
+.calc-btn-row { display: flex; gap: 12px; margin-top: 8px; }
+.btn-calculate {
+  flex: 1; padding: 14px 28px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff; border: none; border-radius: var(--radius-sm);
+  font-size: 16px; font-weight: 700; cursor: pointer; font-family: inherit;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 4px 14px rgba(0,102,204,0.3);
+}
+.btn-calculate:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,102,204,0.4); }
+.btn-calculate:active { transform: translateY(0); }
+.btn-calculate:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+
+/* ─── Error ─── */
+.error-message {
+  display: none; background: var(--danger-light); border: 1px solid #fca5a5;
+  color: var(--danger); padding: 12px 18px; border-radius: var(--radius-sm);
+  margin-bottom: 20px; font-size: 14px; font-weight: 500;
+}
+.error-message.active { display: block; }
+
+/* ─── Progress ─── */
+.progress-card { display: none; }
+.progress-card.visible { display: block; animation: fadeInUp 0.4s ease; }
+.progress-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.progress-title { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 700; color: var(--text-primary); }
+.progress-spinner {
+  width: 20px; height: 20px;
+  border: 3px solid var(--border); border-top-color: var(--primary);
+  border-radius: 50%; animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.progress-percent { font-size: 18px; font-weight: 800; color: var(--primary); }
+.progress-bar-track { width: 100%; height: 8px; background: #EEF2F6; border-radius: 999px; overflow: hidden; margin-bottom: 18px; }
+.progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--primary-light)); border-radius: 999px; width: 0%; transition: width 0.5s ease; }
+.progress-steps { display: flex; flex-direction: column; gap: 10px; }
+.progress-step { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 500; color: var(--text-light); transition: color 0.3s; }
+.progress-step.active { color: var(--primary); font-weight: 600; }
+.progress-step.done { color: var(--accent-green); }
+.progress-step-icon {
+  width: 24px; height: 24px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; flex-shrink: 0;
+  background: #F0F2F5; color: var(--text-light); border: 2px solid var(--border); transition: all 0.3s;
+}
+.progress-step.active .progress-step-icon { background: #E8F4FD; border-color: var(--primary); color: var(--primary); }
+.progress-step.done .progress-step-icon { background: #E6F9F1; border-color: var(--accent-green); color: var(--accent-green); }
+
+/* ─── Results ─── */
+.results-container { display: none; }
+.results-container.visible { display: block; animation: fadeInUp 0.5s ease; }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ═══ Curriculum Output ═══ */
+.curriculum-wrapper {
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.curriculum-top-header {
+  background: linear-gradient(135deg, #1e293b, #334155);
+  color: #fff;
+  padding: 24px 32px;
+}
+.curriculum-top-header .course-name {
+  font-size: 22px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 6px;
+}
+.curriculum-top-header .course-copy {
+  font-size: 14px; opacity: 0.8; font-style: italic; margin-bottom: 14px;
+}
+.course-meta-row {
+  display: flex; gap: 24px; flex-wrap: wrap;
+}
+.course-meta-item {
+  display: flex; align-items: flex-start; gap: 8px;
+}
+.course-meta-label {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+  color: rgba(255,255,255,0.5); white-space: nowrap; padding-top: 2px;
+}
+.course-meta-value {
+  font-size: 13px; color: rgba(255,255,255,0.9); font-weight: 500;
+}
+
+/* Module Grid */
+.modules-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 0;
+  border-top: 1px solid var(--border);
+}
+.module-card {
+  padding: 20px 24px;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s;
+}
+.module-card:hover { background: #FAFBFE; }
+.module-hour-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: #EEF6FF; color: var(--primary);
+  border-radius: 4px; padding: 2px 8px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.3px;
+  margin-bottom: 8px;
+}
+.module-title {
+  font-size: 14px; font-weight: 800; color: var(--text-primary);
+  margin-bottom: 12px; line-height: 1.4;
+  border-left: 3px solid var(--primary);
+  padding-left: 10px;
+}
+.module-title-bracket {
+  color: var(--primary-dark); font-weight: 900;
+}
+.module-details {
+  display: flex; flex-direction: column; gap: 6px;
+}
+.module-detail-item {
+  font-size: 12.5px; color: var(--text-secondary);
+  line-height: 1.5; display: flex; gap: 4px;
+}
+.module-detail-bullet {
+  color: var(--primary); font-weight: 700; flex-shrink: 0; margin-top: 1px;
+}
+
+/* ─── Save Buttons ─── */
+.save-btn-row {
+  display: none; justify-content: center; gap: 12px;
+  margin-top: 24px; margin-bottom: 8px;
+}
+.save-btn-row.visible { display: flex; flex-wrap: wrap; }
+.btn-pdf {
+  display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px;
+  background: var(--primary-dark); color: #fff; border: none; border-radius: var(--radius-sm);
+  font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s;
+}
+.btn-pdf:hover { background: #002D5C; }
+.btn-html {
+  display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px;
+  background: var(--primary); color: #fff; border: none; border-radius: var(--radius-sm);
+  font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s;
+}
+.btn-html:hover { background: #0055AA; }
+.btn-copy {
+  display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px;
+  background: #fff; color: var(--text-secondary); border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm); font-size: 14px; font-weight: 600;
+  cursor: pointer; font-family: inherit; transition: all 0.15s;
+}
+.btn-copy:hover { border-color: #ccc; background: #f9f9f9; }
+.btn-copy.copied { border-color: var(--accent-green); color: var(--accent-green); background: #E6F9F1; }
+
+/* ─── Footer ─── */
+.calc-footer { text-align: center; padding: 24px; color: var(--text-light); font-size: 12px; }
+
+/* ─── Print ─── */
+@media print {
+  body { background: #fff; }
+  .calc-header { background: var(--primary) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .header-illustration { display: none; }
+  #input-section, .progress-card, .save-btn-row, .calc-footer { display: none !important; }
+  .section-card:has(.calc-btn-row) { display: none !important; }
+  .error-message { display: none !important; }
+  .results-container { display: block !important; }
+  .curriculum-wrapper { box-shadow: none; }
+  .curriculum-top-header, .module-card { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .modules-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 900px) {
+  .input-grid { grid-template-columns: 1fr; }
+  .modules-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .calc-header { flex-direction: column; text-align: center; }
+  .header-illustration { width: 140px; height: 120px; order: -1; }
+  .course-meta-row { flex-direction: column; gap: 10px; }
+}
+@media (max-width: 600px) {
+  .calculator-wrap { padding: 12px 12px 40px; }
+  .calc-header { padding: 24px 20px; }
+  .calc-header h1 { font-size: 20px; }
+  .section-card { padding: 20px 16px; }
+  .save-btn-row { flex-direction: column; align-items: stretch; }
+}
+</style>
+
+<div class="calculator-wrap">
+  <!-- Header -->
+  <header class="calc-header">
+    <div class="header-text">
+      <div class="header-badge">📚 Curriculum Generator</div>
+      <h1>교육 커리큘럼 생성기</h1>
+      <p class="subtitle">교육주제와 교육생 정보를 입력하면 AI가 시간별 모듈 구성의 커리큘럼을 자동 생성합니다.</p>
+    </div>
+    <div class="header-illustration">
+      <svg viewBox="0 0 200 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Book base -->
+        <rect x="30" y="40" width="140" height="100" rx="6" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+        <!-- Book spine -->
+        <rect x="30" y="40" width="14" height="100" rx="4" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+        <!-- Lines in book -->
+        <line x1="56" y1="62" x2="154" y2="62" stroke="rgba(255,255,255,0.25)" stroke-width="2" stroke-linecap="round"/>
+        <line x1="56" y1="75" x2="140" y2="75" stroke="rgba(255,255,255,0.18)" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="56" y1="88" x2="148" y2="88" stroke="rgba(255,255,255,0.18)" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="56" y1="101" x2="134" y2="101" stroke="rgba(255,255,255,0.18)" stroke-width="1.5" stroke-linecap="round"/>
+        <!-- Module blocks -->
+        <rect x="56" y="112" width="26" height="16" rx="3" fill="rgba(255,255,255,0.2)"/>
+        <rect x="88" y="112" width="26" height="16" rx="3" fill="rgba(255,255,255,0.15)"/>
+        <rect x="120" y="112" width="26" height="16" rx="3" fill="rgba(255,255,255,0.1)"/>
+        <!-- Dots representing bullet points -->
+        <circle cx="62" cy="120" r="2" fill="rgba(255,255,255,0.6)"/>
+        <circle cx="94" cy="120" r="2" fill="rgba(255,255,255,0.5)"/>
+        <circle cx="126" cy="120" r="2" fill="rgba(255,255,255,0.4)"/>
+        <!-- Pencil -->
+        <line x1="155" y1="28" x2="170" y2="55" stroke="rgba(255,255,255,0.5)" stroke-width="5" stroke-linecap="round"/>
+        <line x1="155" y1="28" x2="170" y2="55" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-linecap="round"/>
+        <polygon points="155,28 148,22 162,24" fill="rgba(255,255,255,0.4)"/>
+        <text x="100" y="172" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="Pretendard, sans-serif" font-weight="600">CURRICULUM GENERATOR</text>
+      </svg>
+    </div>
+  </header>
+
+  <!-- Input -->
+  <section class="section-card" id="input-section">
+    <div class="section-title"><span class="icon icon-blue">📋</span> 교육 정보 입력</div>
+    <div class="input-grid">
+      <div class="input-group full-width">
+        <label class="input-label">Anthropic API Key</label>
+        <input type="password" class="input-field" id="apiKey" placeholder="sk-ant-...">
+        <span class="input-hint">API 키는 브라우저에서만 사용되며 어디에도 저장/전송되지 않습니다.</span>
+      </div>
+      <div class="input-group">
+        <label class="input-label">교육주제</label>
+        <input type="text" class="input-field" id="eduTopic" placeholder="예: 리더십 역량 개발, 데이터 분석 입문 등">
+        <span class="input-hint">교육의 핵심 주제를 구체적으로 입력하세요.</span>
+      </div>
+      <div class="input-group">
+        <label class="input-label">교육생</label>
+        <input type="text" class="input-field" id="eduLearner" placeholder="예: 신입사원, 중간관리자, 마케팅 팀원 등">
+        <span class="input-hint">교육 대상의 직급·직무·특성을 입력하세요.</span>
+      </div>
+      <div class="input-group">
+        <label class="input-label">교육시간 (모듈 수)</label>
+        <select class="input-field" id="eduHours">
+          <option value="2">2시간 (2모듈)</option>
+          <option value="3">3시간 (3모듈)</option>
+          <option value="4" selected>4시간 (4모듈)</option>
+          <option value="5">5시간 (5모듈)</option>
+          <option value="6">6시간 (6모듈)</option>
+          <option value="7">7시간 (7모듈)</option>
+          <option value="8">8시간 (8모듈)</option>
+        </select>
+        <span class="input-hint">시간당 1개 모듈이 생성됩니다.</span>
+      </div>
+      <div class="input-group">
+        <label class="input-label">추가 요청사항 (선택)</label>
+        <input type="text" class="input-field" id="eduExtra" placeholder="예: 실습 위주, 이론+사례 균형, 워크숍 형식 등">
+        <span class="input-hint">특별히 강조하고 싶은 방향을 입력하세요. (비워도 됩니다)</span>
+      </div>
+      <div class="input-group full-width">
+        <label class="input-label">고객 소통 내용 (선택)</label>
+        <textarea class="input-field" id="eduConversation" style="min-height:120px;" placeholder="고객과 나눈 이메일, 메모, 채팅 내용 등을 그대로 붙여넣으세요. AI가 내용을 분석해 커리큘럼에 반영합니다."></textarea>
+        <span class="input-hint">비워도 됩니다. 내용이 많을수록 요구사항에 맞는 커리큘럼이 생성됩니다.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Button -->
+  <section class="section-card" style="padding:20px 32px;">
+    <div class="calc-btn-row">
+      <button class="btn-calculate" id="btnGenerate">📚 AI 커리큘럼 생성하기</button>
+    </div>
+  </section>
+
+  <!-- Error -->
+  <div class="error-message" id="errorMsg"></div>
+
+  <!-- Progress -->
+  <section class="section-card progress-card" id="currProgress">
+    <div class="progress-header">
+      <div class="progress-title"><div class="progress-spinner"></div><span>AI가 커리큘럼을 설계 중...</span></div>
+      <div class="progress-percent" id="currProgressPercent">0%</div>
+    </div>
+    <div class="progress-bar-track"><div class="progress-bar-fill" id="currProgressBar"></div></div>
+    <div class="progress-steps">
+      <div class="progress-step" id="step1"><div class="progress-step-icon">1</div><span>입력 데이터 검증 및 학습자 분석</span></div>
+      <div class="progress-step" id="step2"><div class="progress-step-icon">2</div><span>AI 모델에 커리큘럼 설계 요청</span></div>
+      <div class="progress-step" id="step3"><div class="progress-step-icon">3</div><span>과정명·목표·기대효과 도출 중</span></div>
+      <div class="progress-step" id="step4"><div class="progress-step-icon">4</div><span>모듈별 세부 내용 구성 중</span></div>
+      <div class="progress-step" id="step5"><div class="progress-step-icon">5</div><span>커리큘럼 통합 정리 및 결과 완성</span></div>
+    </div>
+  </section>
+
+  <!-- ═══ Results ═══ -->
+  <div class="results-container" id="currResults">
+    <div class="curriculum-wrapper">
+      <div class="curriculum-top-header">
+        <div class="course-name" id="outCourseName"></div>
+        <div class="course-copy" id="outCourseCopy"></div>
+        <div class="course-meta-row">
+          <div class="course-meta-item">
+            <span class="course-meta-label">교육목표</span>
+            <span class="course-meta-value" id="outObjective"></span>
+          </div>
+          <div class="course-meta-item">
+            <span class="course-meta-label">기대효과</span>
+            <span class="course-meta-value" id="outEffect"></span>
+          </div>
+        </div>
+      </div>
+      <div class="modules-grid" id="modulesGrid"></div>
+    </div>
+  </div>
+
+  <!-- Save -->
+  <div class="save-btn-row" id="currSaveBtns">
+    <button class="btn-pdf" id="btnPdf">📄 PDF로 저장</button>
+    <button class="btn-html" id="btnHtml">💾 HTML로 저장</button>
+    <button class="btn-copy" id="btnCopy">📋 텍스트 복사</button>
+  </div>
+</div>
+<div class="calc-footer">Powered by Claude API | Curriculum Generator | 김종혁 제작</div>
+
+<script>
+(function() {
+  /* ─── Progress ─── */
+  var ps = { interval: null, cur: 0, tgt: 0 };
+  function setProgress(p) { ps.tgt = Math.min(p, 100); }
+  function activateStep(n) {
+    for (var i = 1; i <= 5; i++) {
+      var el = document.getElementById('step' + i);
+      el.classList.remove('active','done');
+      if (i < n) { el.classList.add('done'); el.querySelector('.progress-step-icon').textContent = '✓'; }
+      else if (i === n) el.classList.add('active');
+    }
+  }
+  function startProgressAnimation() {
+    ps.cur = 0; ps.tgt = 0;
+    document.getElementById('currProgressBar').style.width = '0%';
+    document.getElementById('currProgressPercent').textContent = '0%';
+    document.getElementById('currProgress').classList.add('visible');
+    for (var i = 1; i <= 5; i++) { var el = document.getElementById('step'+i); el.classList.remove('active','done'); el.querySelector('.progress-step-icon').textContent = i; }
+    activateStep(1); setProgress(10);
+    setTimeout(function(){activateStep(2); setProgress(25);}, 1500);
+    setTimeout(function(){activateStep(3); setProgress(45);}, 4000);
+    setTimeout(function(){activateStep(4); setProgress(68);}, 8000);
+    setTimeout(function(){setProgress(80);}, 14000);
+    setTimeout(function(){setProgress(88);}, 22000);
+    ps.interval = setInterval(function() {
+      if (ps.cur < ps.tgt) {
+        ps.cur += 0.5;
+        if (ps.cur > ps.tgt) ps.cur = ps.tgt;
+        var r = Math.round(ps.cur);
+        document.getElementById('currProgressBar').style.width = r+'%';
+        document.getElementById('currProgressPercent').textContent = r+'%';
+      }
+    }, 50);
+  }
+  function completeProgress() {
+    activateStep(5); setProgress(100);
+    setTimeout(function() {
+      var e = document.getElementById('step5'); e.classList.remove('active'); e.classList.add('done'); e.querySelector('.progress-step-icon').textContent = '✓';
+      document.getElementById('currProgressBar').style.width = '100%'; document.getElementById('currProgressPercent').textContent = '100%';
+      ps.cur = 100; clearInterval(ps.interval);
+      setTimeout(function(){ document.getElementById('currProgress').classList.remove('visible'); }, 600);
+    }, 400);
+  }
+  function stopProgress() { clearInterval(ps.interval); document.getElementById('currProgress').classList.remove('visible'); }
+
+  /* ─── API Call ─── */
+  async function callClaudeAPI(apiKey, topic, learner, hours, extra, conversation) {
+    var systemPrompt =
+      '당신은 기업 교육 전문가이자 HRD 커리큘럼 설계 컨설턴트입니다.\n' +
+      '교육주제와 교육생 정보를 바탕으로 체계적인 교육 커리큘럼을 설계합니다.\n\n' +
+      '출력 규칙 (반드시 준수):\n' +
+      '1. courseName: 과정명 (자유 길이, 명확하고 임팩트 있게)\n' +
+      '2. copy: 홍보용 카피 1줄 (빈칸 포함 30자 이내, 임팩트 있게)\n' +
+      '3. objective: 교육목표 1줄 (빈칸 포함 30자 이내)\n' +
+      '4. effect: 기대효과 1줄 (빈칸 포함 30자 이내)\n' +
+      '5. modules 배열: 교육시간 수만큼 모듈 생성\n' +
+      '   - title: 모듈명 (빈칸 포함 20자 이내)\n' +
+      '   - details: 세부내용 배열, 정확히 6개, 각 항목 빈칸 포함 32자 이내\n\n' +
+      '※ 글자 수 제한을 반드시 지켜주세요. 초과 시 줄여서 작성하세요.\n' +
+      '※ 응답은 반드시 JSON 형식으로만 작성하세요.';
+
+    var userPrompt =
+      '다음 정보를 바탕으로 교육 커리큘럼을 설계해 주세요.\n\n' +
+      '교육주제: ' + topic + '\n' +
+      '교육생: ' + learner + '\n' +
+      '교육시간: ' + hours + '시간 (모듈 ' + hours + '개)\n' +
+      (extra ? '추가요청: ' + extra + '\n' : '') +
+      (conversation ? '\n[고객 소통 내용 - 아래 내용을 분석해 커리큘럼에 반영하세요]\n' + conversation + '\n' : '') +
+      '\n반드시 아래 JSON 형식으로만 응답:\n' +
+      '{\n' +
+      '  "courseName": "과정명",\n' +
+      '  "copy": "홍보 카피 (30자이내)",\n' +
+      '  "objective": "교육목표 (30자이내)",\n' +
+      '  "effect": "기대효과 (30자이내)",\n' +
+      '  "modules": [\n' +
+      '    {\n' +
+      '      "title": "모듈명 (20자이내)",\n' +
+      '      "details": [\n' +
+      '        "세부내용1 (32자이내)",\n' +
+      '        "세부내용2 (32자이내)",\n' +
+      '        "세부내용3 (32자이내)",\n' +
+      '        "세부내용4 (32자이내)",\n' +
+      '        "세부내용5 (32자이내)",\n' +
+      '        "세부내용6 (32자이내)"\n' +
+      '      ]\n' +
+      '    }\n' +
+      '  ]\n' +
+      '}';
+
+    var response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5',
+        max_tokens: 4096,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userPrompt }]
+      })
+    });
+
+    if (!response.ok) {
+      var errData = await response.json().catch(function(){ return {}; });
+      if (response.status === 401) throw new Error('API 키가 유효하지 않습니다.');
+      else if (response.status === 429) throw new Error('API 요청 한도 초과. 잠시 후 다시 시도해 주세요.');
+      else throw new Error((errData.error && errData.error.message) || ('API 오류 (' + response.status + ')'));
+    }
+
+    var data = await response.json();
+    var content = data.content[0].text;
+    var jsonStr = content;
+    var jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (jsonMatch) jsonStr = jsonMatch[1];
+    try {
+      return JSON.parse(jsonStr.trim());
+    } catch(e) {
+      var braceMatch = jsonStr.match(/\{[\s\S]*\}/);
+      if (braceMatch) return JSON.parse(braceMatch[0]);
+      throw new Error('AI 응답 파싱 실패. 다시 시도해 주세요.');
+    }
+  }
+
+  /* ─── Render Modules ─── */
+  function renderModules(modules) {
+    var grid = document.getElementById('modulesGrid');
+    grid.innerHTML = '';
+    modules.forEach(function(mod, idx) {
+      var card = document.createElement('div');
+      card.className = 'module-card';
+
+      var badge = document.createElement('div');
+      badge.className = 'module-hour-badge';
+      badge.textContent = (idx + 1) + '시간차';
+
+      var titleEl = document.createElement('div');
+      titleEl.className = 'module-title';
+      var bracketOpen = document.createElement('span');
+      bracketOpen.className = 'module-title-bracket';
+      bracketOpen.textContent = '[';
+      var titleText = document.createTextNode(mod.title);
+      var bracketClose = document.createElement('span');
+      bracketClose.className = 'module-title-bracket';
+      bracketClose.textContent = ']';
+      titleEl.appendChild(bracketOpen);
+      titleEl.appendChild(titleText);
+      titleEl.appendChild(bracketClose);
+
+      var detailsEl = document.createElement('div');
+      detailsEl.className = 'module-details';
+      (mod.details || []).forEach(function(detail) {
+        var item = document.createElement('div');
+        item.className = 'module-detail-item';
+        var bullet = document.createElement('span');
+        bullet.className = 'module-detail-bullet';
+        bullet.textContent = 'ㆍ';
+        var text = document.createElement('span');
+        text.textContent = detail;
+        item.appendChild(bullet);
+        item.appendChild(text);
+        detailsEl.appendChild(item);
+      });
+
+      card.appendChild(badge);
+      card.appendChild(titleEl);
+      card.appendChild(detailsEl);
+      grid.appendChild(card);
+    });
+  }
+
+  /* ─── Generate ─── */
+  async function generateCurriculum() {
+    var topic   = document.getElementById('eduTopic').value.trim();
+    var learner = document.getElementById('eduLearner').value.trim();
+    var hours   = parseInt(document.getElementById('eduHours').value, 10);
+    var extra        = document.getElementById('eduExtra').value.trim();
+    var conversation = document.getElementById('eduConversation').value.trim();
+    var apiKey  = document.getElementById('apiKey').value.trim();
+    var btn     = document.getElementById('btnGenerate');
+    var errorMsg = document.getElementById('errorMsg');
+    var results  = document.getElementById('currResults');
+
+    errorMsg.classList.remove('active');
+    if (!apiKey)  { errorMsg.textContent = 'Anthropic API Key를 입력해주세요.'; errorMsg.classList.add('active'); return; }
+    if (!topic)   { errorMsg.textContent = '교육주제를 입력해주세요.'; errorMsg.classList.add('active'); return; }
+    if (!learner) { errorMsg.textContent = '교육생 정보를 입력해주세요.'; errorMsg.classList.add('active'); return; }
+
+    localStorage.setItem('curr_gen_api_key', apiKey);
+    results.classList.remove('visible');
+    document.getElementById('currSaveBtns').classList.remove('visible');
+    btn.disabled = true;
+    startProgressAnimation();
+
+    try {
+      var result = await callClaudeAPI(apiKey, topic, learner, hours, extra, conversation);
+      completeProgress();
+      setTimeout(function() {
+        document.getElementById('outCourseName').textContent = result.courseName || '';
+        document.getElementById('outCourseCopy').textContent = '"' + (result.copy || '') + '"';
+        document.getElementById('outObjective').textContent = result.objective || '';
+        document.getElementById('outEffect').textContent = result.effect || '';
+        renderModules(result.modules || []);
+        results.classList.add('visible');
+        document.getElementById('currSaveBtns').classList.add('visible');
+        results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 1100);
+    } catch(err) {
+      stopProgress();
+      errorMsg.textContent = err.message;
+      errorMsg.classList.add('active');
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  /* ─── Init ─── */
+  var savedKey = localStorage.getItem('curr_gen_api_key');
+  if (savedKey) document.getElementById('apiKey').value = savedKey;
+
+  document.getElementById('btnGenerate').addEventListener('click', generateCurriculum);
+  document.getElementById('apiKey').addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('eduTopic').focus(); });
+  document.getElementById('eduTopic').addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('eduLearner').focus(); });
+  document.getElementById('eduLearner').addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('eduExtra').focus(); });
+  document.getElementById('eduExtra').addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('eduConversation').focus(); });
+
+  /* ─── Save: PDF ─── */
+  document.getElementById('btnPdf').addEventListener('click', function(){ window.print(); });
+
+  /* ─── Save: HTML ─── */
+  document.getElementById('btnHtml').addEventListener('click', function() {
+    var resultsEl = document.getElementById('currResults');
+    if (!resultsEl) return;
+    var topic = document.getElementById('eduTopic').value.trim();
+    var styles = document.querySelector('style').outerHTML;
+    var fontLink = '<link rel="preconnect" href="https://cdn.jsdelivr.net"><link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">';
+    var html = '<!DOCTYPE html>\n<html lang="ko">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<title>커리큘럼 - ' + topic + '</title>\n' + fontLink + '\n' + styles + '\n</head>\n<body>\n<div class="calculator-wrap">\n' + resultsEl.outerHTML + '\n</div>\n</body>\n</html>';
+    var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'Curriculum_' + topic.replace(/\s+/g,'_') + '_' + new Date().toISOString().slice(0,10) + '.html';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+  });
+
+  /* ─── Save: Copy ─── */
+  document.getElementById('btnCopy').addEventListener('click', function() {
+    var topic = document.getElementById('eduTopic').value.trim();
+    var learner = document.getElementById('eduLearner').value.trim();
+    var courseName = document.getElementById('outCourseName').textContent;
+    var copy = document.getElementById('outCourseCopy').textContent;
+    var objective = document.getElementById('outObjective').textContent;
+    var effect = document.getElementById('outEffect').textContent;
+
+    var text = '═══ ' + courseName + ' ═══\n';
+    text += '카피: ' + copy + '\n';
+    text += '교육목표: ' + objective + '\n';
+    text += '기대효과: ' + effect + '\n';
+    text += '교육주제: ' + topic + ' | 교육생: ' + learner + '\n';
+    text += '─'.repeat(36) + '\n\n';
+
+    var cards = document.querySelectorAll('.module-card');
+    cards.forEach(function(card, i) {
+      var titleEl = card.querySelector('.module-title');
+      var title = titleEl ? titleEl.textContent.trim() : '';
+      text += (i+1) + '시간차 ' + title + '\n';
+      card.querySelectorAll('.module-detail-item').forEach(function(item) {
+        var bullet = item.querySelector('.module-detail-bullet').textContent;
+        var content = item.querySelector('span:last-child').textContent;
+        text += bullet + content + '\n';
+      });
+      text += '\n';
+    });
+
+    navigator.clipboard.writeText(text).then(function() {
+      var btn = document.getElementById('btnCopy');
+      btn.classList.add('copied'); btn.innerHTML = '✅ 복사 완료!';
+      setTimeout(function(){ btn.classList.remove('copied'); btn.innerHTML = '📋 텍스트 복사'; }, 2000);
+    }).catch(function() {
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+      var btn = document.getElementById('btnCopy');
+      btn.classList.add('copied'); btn.innerHTML = '✅ 복사 완료!';
+      setTimeout(function(){ btn.classList.remove('copied'); btn.innerHTML = '📋 텍스트 복사'; }, 2000);
+    });
+  });
+})();
+</script>
+</body>
+</html>
