@@ -725,6 +725,20 @@ select.input-field { cursor: pointer; }
   document.getElementById('eduLearner').addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('eduExtra').focus(); });
   document.getElementById('eduExtra').addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('eduConversation').focus(); });
 
+  /* ─── Pre-fill from Edu-CRM (localStorage) ─── */
+  try {
+    var prefillJson = localStorage.getItem('curriculum_prefill');
+    if (prefillJson) {
+      var pf = JSON.parse(prefillJson);
+      if (pf.topic) document.getElementById('eduTopic').value = pf.topic;
+      if (pf.learner) document.getElementById('eduLearner').value = pf.learner;
+      if (pf.hours) { var hSel = document.getElementById('eduHours'); if (hSel) { var hVal = Math.max(2, Math.min(8, Number(pf.hours))); hSel.value = String(hVal); } }
+      if (pf.extra) document.getElementById('eduExtra').value = pf.extra;
+      if (pf.conversation) document.getElementById('eduConversation').value = pf.conversation;
+      localStorage.removeItem('curriculum_prefill');
+    }
+  } catch(e) {}
+
   /* ─── Save: PDF ─── */
   document.getElementById('btnPdf').addEventListener('click', function(){ window.print(); });
 
