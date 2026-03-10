@@ -283,18 +283,65 @@ select.input-field { cursor: pointer; }
 /* ─── Footer ─── */
 .calc-footer { text-align: center; padding: 24px; color: var(--text-light); font-size: 12px; }
 
-/* ─── Print ─── */
+/* ─── Print (A4 PDF 최적화) ─── */
+@page { size: A4; margin: 15mm 18mm 20mm 18mm; }
 @media print {
-  body { background: #fff; }
-  .calc-header { background: var(--primary) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .header-illustration { display: none; }
-  #input-section, .progress-card, .save-btn-row, .calc-footer { display: none !important; }
-  .section-card:has(.calc-btn-row) { display: none !important; }
-  .error-message { display: none !important; }
+  *, *::before, *::after { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  body { background: #fff !important; font-size: 11pt; line-height: 1.5; }
+  .calculator-wrap { max-width: 100%; padding: 0; }
+  .calc-header, .header-illustration, #input-section, .progress-card, .save-btn-row, .calc-footer,
+  .section-card:has(.calc-btn-row), .error-message { display: none !important; }
   .results-container { display: block !important; }
-  .curriculum-wrapper { box-shadow: none; }
-  .curriculum-top-header, .module-card { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .modules-grid { grid-template-columns: repeat(2, 1fr); }
+
+  /* 커리큘럼 래퍼 */
+  .curriculum-wrapper { box-shadow: none; border: none; border-radius: 0; }
+
+  /* 상단 헤더 → A4 문서 타이틀 */
+  .curriculum-top-header {
+    background: #1e293b !important; color: #fff; padding: 20px 28px 16px;
+    border-radius: 0; page-break-inside: avoid;
+  }
+  .curriculum-top-header .course-name { font-size: 18pt; margin-bottom: 4px; }
+  .curriculum-top-header .course-copy { font-size: 10pt; margin-bottom: 10px; }
+  .course-meta-row { gap: 16px; }
+  .course-meta-label { font-size: 8pt; }
+  .course-meta-value { font-size: 10pt; }
+
+  /* 모듈 그리드 → A4 세로 1열 테이블형 */
+  .modules-grid {
+    display: block !important; border-top: 2px solid #1e293b;
+  }
+  .module-card {
+    display: flex; align-items: flex-start; gap: 16px;
+    padding: 14px 20px; border-right: none;
+    border-bottom: 1px solid #ddd;
+    page-break-inside: avoid;
+  }
+  .module-card:last-child { border-bottom: 2px solid #1e293b; }
+  .module-hour-badge {
+    flex-shrink: 0; width: 58px; text-align: center;
+    background: #EEF6FF !important; font-size: 9pt;
+    padding: 3px 6px; margin-bottom: 0; margin-top: 2px;
+  }
+  .module-title {
+    flex-shrink: 0; width: 140px; font-size: 10.5pt;
+    margin-bottom: 0; border-left: 3px solid #1e293b;
+    padding-left: 8px; line-height: 1.4;
+  }
+  .module-details {
+    flex: 1; display: grid; grid-template-columns: 1fr 1fr;
+    gap: 2px 16px;
+  }
+  .module-detail-item { font-size: 9pt; line-height: 1.5; }
+  .module-detail-bullet { font-size: 9pt; }
+
+  /* 하단 푸터 표시 */
+  .curriculum-wrapper::after {
+    content: '나눔경영컨설팅 | Nanum Management Consulting';
+    display: block; text-align: center; padding: 12px 0 0;
+    font-size: 8pt; color: #94A3B8; border-top: 1px solid #E2E8F0;
+    margin-top: 8px;
+  }
 }
 
 /* ─── Responsive ─── */
