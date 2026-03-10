@@ -212,42 +212,39 @@ select.input-field { cursor: pointer; }
   font-size: 13px; color: rgba(255,255,255,0.9); font-weight: 500;
 }
 
-/* Module Grid */
+/* Module List (세로형) */
 .modules-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 0;
-  border-top: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  border-top: 2px solid var(--text-primary);
 }
 .module-card {
-  padding: 20px 24px;
-  border-right: 1px solid var(--border);
+  padding: 14px 24px;
   border-bottom: 1px solid var(--border);
   transition: background 0.2s;
 }
+.module-card:last-child { border-bottom: 2px solid var(--text-primary); }
 .module-card:hover { background: #FAFBFE; }
 .module-hour-badge {
-  display: inline-flex; align-items: center; gap: 4px;
+  display: inline-flex; align-items: center; gap: 4px; vertical-align: middle;
   background: #EEF6FF; color: var(--primary);
-  border-radius: 4px; padding: 2px 8px;
-  font-size: 11px; font-weight: 700; letter-spacing: 0.3px;
-  margin-bottom: 8px;
+  border-radius: 4px; padding: 2px 10px;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.3px;
+  margin-right: 10px;
 }
 .module-title {
-  font-size: 14px; font-weight: 800; color: var(--text-primary);
-  margin-bottom: 12px; line-height: 1.4;
-  border-left: 3px solid var(--primary);
-  padding-left: 10px;
+  display: inline; font-size: 15px; font-weight: 800; color: var(--text-primary);
+  line-height: 1.4;
 }
 .module-title-bracket {
   color: var(--primary-dark); font-weight: 900;
 }
 .module-details {
-  display: flex; flex-direction: column; gap: 6px;
+  display: flex; flex-direction: column; gap: 4px;
+  margin-top: 8px; padding-left: 14px;
 }
 .module-detail-item {
-  font-size: 12.5px; color: var(--text-secondary);
-  line-height: 1.5; display: flex; gap: 4px;
+  font-size: 13px; color: var(--text-secondary);
+  line-height: 1.6; display: flex; gap: 4px;
 }
 .module-detail-bullet {
   color: var(--primary); font-weight: 700; flex-shrink: 0; margin-top: 1px;
@@ -346,7 +343,6 @@ select.input-field { cursor: pointer; }
 /* ─── Responsive ─── */
 @media (max-width: 900px) {
   .input-grid { grid-template-columns: 1fr; }
-  .modules-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 768px) {
   .calc-header { flex-direction: column; text-align: center; }
@@ -567,7 +563,7 @@ select.input-field { cursor: pointer; }
       '4. effect: 기대효과 1줄 (빈칸 포함 30자 이내)\n' +
       '5. modules 배열: 교육시간 수만큼 모듈 생성\n' +
       '   - title: 모듈명 (빈칸 포함 20자 이내)\n' +
-      '   - details: 세부내용 배열, 정확히 6개, 각 항목 빈칸 포함 32자 이내\n\n' +
+      '   - details: 세부내용 배열, 정확히 6개, 각 항목 빈칸 포함 50자 이내\n\n' +
       '※ 글자 수 제한을 반드시 지켜주세요. 초과 시 줄여서 작성하세요.\n' +
       '※ 응답은 반드시 JSON 형식으로만 작성하세요.';
 
@@ -588,12 +584,12 @@ select.input-field { cursor: pointer; }
       '    {\n' +
       '      "title": "모듈명 (20자이내)",\n' +
       '      "details": [\n' +
-      '        "세부내용1 (32자이내)",\n' +
-      '        "세부내용2 (32자이내)",\n' +
-      '        "세부내용3 (32자이내)",\n' +
-      '        "세부내용4 (32자이내)",\n' +
-      '        "세부내용5 (32자이내)",\n' +
-      '        "세부내용6 (32자이내)"\n' +
+      '        "세부내용1 (50자이내)",\n' +
+      '        "세부내용2 (50자이내)",\n' +
+      '        "세부내용3 (50자이내)",\n' +
+      '        "세부내용4 (50자이내)",\n' +
+      '        "세부내용5 (50자이내)",\n' +
+      '        "세부내용6 (50자이내)"\n' +
       '      ]\n' +
       '    }\n' +
       '  ]\n' +
