@@ -311,33 +311,32 @@ select.input-field { cursor: pointer; }
   /* QR코드 */
   .print-qr { display: block !important; position: absolute; top: 16px; right: 24px; }
 
-  /* 모듈 그리드 → A4 세로 1열 테이블형 */
+  /* 모듈 그리드 → 세로형 (시간+제목 / 세부내용) */
   .modules-grid {
     display: block !important; border-top: 2px solid #1e293b;
   }
   .module-card {
-    display: flex; align-items: flex-start; gap: 16px;
-    padding: 14px 20px; border-right: none;
+    display: block; padding: 12px 20px; border-right: none;
     border-bottom: 1px solid #ddd;
     page-break-inside: avoid;
   }
   .module-card:last-child { border-bottom: 2px solid #1e293b; }
   .module-hour-badge {
-    flex-shrink: 0; width: 58px; text-align: center;
+    display: inline-flex; vertical-align: middle;
     background: #EEF6FF !important; font-size: 9pt;
-    padding: 3px 6px; margin-bottom: 0; margin-top: 2px;
+    padding: 2px 8px; margin-bottom: 0; margin-right: 8px;
   }
   .module-title {
-    flex-shrink: 0; width: 140px; font-size: 10.5pt;
-    margin-bottom: 0; border-left: 3px solid #1e293b;
-    padding-left: 8px; line-height: 1.4;
+    display: inline; font-size: 10.5pt;
+    margin-bottom: 0; border-left: none;
+    padding-left: 0; line-height: 1.4;
   }
   .module-details {
-    flex: 1; display: grid; grid-template-columns: 1fr 1fr;
-    gap: 2px 16px;
+    display: flex; flex-direction: column; gap: 1px;
+    margin-top: 6px; padding-left: 12px;
   }
-  .module-detail-item { font-size: 9pt; line-height: 1.5; }
-  .module-detail-bullet { font-size: 9pt; }
+  .module-detail-item { font-size: 9.5pt; line-height: 1.6; }
+  .module-detail-bullet { font-size: 9.5pt; }
 
   /* 하단 푸터 표시 */
   .print-footer { display: block !important; }
@@ -715,6 +714,7 @@ select.input-field { cursor: pointer; }
       completeProgress();
       setTimeout(function() {
         document.getElementById('outCourseName').textContent = result.courseName || '';
+        document.title = topic + ' 커리큘럼';
         document.getElementById('outCourseCopy').textContent = '"' + (result.copy || '') + '"';
         document.getElementById('outObjective').textContent = result.objective || '';
         document.getElementById('outEffect').textContent = result.effect || '';
