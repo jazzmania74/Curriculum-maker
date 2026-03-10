@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Curriculum Generator - 교육 커리큘럼 생성기</title>
+<title>교육 커리큘럼</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
@@ -282,6 +282,8 @@ select.input-field { cursor: pointer; }
 
 /* ─── Footer ─── */
 .calc-footer { text-align: center; padding: 24px; color: var(--text-light); font-size: 12px; }
+.print-qr { display: none; }
+.print-footer { display: none; text-align: center; padding: 14px 0 0; margin-top: 10px; border-top: 1px solid #E2E8F0; font-size: 9pt; color: #64748B; line-height: 1.6; }
 
 /* ─── Print (A4 PDF 최적화) ─── */
 @page { size: A4; margin: 15mm 18mm 20mm 18mm; }
@@ -299,13 +301,15 @@ select.input-field { cursor: pointer; }
   /* 상단 헤더 → A4 문서 타이틀 */
   .curriculum-top-header {
     background: #1e293b !important; color: #fff; padding: 20px 28px 16px;
-    border-radius: 0; page-break-inside: avoid;
+    border-radius: 0; page-break-inside: avoid; position: relative;
   }
-  .curriculum-top-header .course-name { font-size: 18pt; margin-bottom: 4px; }
+  .curriculum-top-header .course-name { font-size: 18pt; margin-bottom: 4px; padding-right: 100px; }
   .curriculum-top-header .course-copy { font-size: 10pt; margin-bottom: 10px; }
   .course-meta-row { gap: 16px; }
   .course-meta-label { font-size: 8pt; }
   .course-meta-value { font-size: 10pt; }
+  /* QR코드 */
+  .print-qr { display: block !important; position: absolute; top: 16px; right: 24px; }
 
   /* 모듈 그리드 → A4 세로 1열 테이블형 */
   .modules-grid {
@@ -336,12 +340,8 @@ select.input-field { cursor: pointer; }
   .module-detail-bullet { font-size: 9pt; }
 
   /* 하단 푸터 표시 */
-  .curriculum-wrapper::after {
-    content: '나눔경영컨설팅 | Nanum Management Consulting';
-    display: block; text-align: center; padding: 12px 0 0;
-    font-size: 8pt; color: #94A3B8; border-top: 1px solid #E2E8F0;
-    margin-top: 8px;
-  }
+  .print-footer { display: block !important; }
+  .curriculum-wrapper::after { display: none; }
 }
 
 /* ─── Responsive ─── */
@@ -479,6 +479,7 @@ select.input-field { cursor: pointer; }
   <div class="results-container" id="currResults">
     <div class="curriculum-wrapper">
       <div class="curriculum-top-header">
+        <img class="print-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=https://jazzmania74.github.io/Curriculum-maker/Curriculum_maker.html&color=ffffff&bgcolor=1e293b" alt="QR" width="72" height="72">
         <div class="course-name" id="outCourseName"></div>
         <div class="course-copy" id="outCourseCopy"></div>
         <div class="course-meta-row">
@@ -493,6 +494,10 @@ select.input-field { cursor: pointer; }
         </div>
       </div>
       <div class="modules-grid" id="modulesGrid"></div>
+    </div>
+    <div class="print-footer">
+      <div><strong>나눔경영컨설팅</strong> | 김종혁 대표</div>
+      <div>📞 010-2414-3329 &nbsp;|&nbsp; ✉️ jazzmania74@gmail.com</div>
     </div>
   </div>
 
