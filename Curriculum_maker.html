@@ -895,66 +895,40 @@ select.input-field { cursor: pointer; }
       modules.push({ badge: badge, title: title, details: details });
     });
 
-    var totalPages = Math.ceil(modules.length / 2) + 1;
+    var totalPages = modules.length + 1;
 
-    /* ── 슬라이드 2~N: 모듈 (2개씩) ── */
-    for (var i = 0; i < modules.length; i += 2) {
+    /* ── 슬라이드 2~N: 모듈 (1개씩) ── */
+    for (var i = 0; i < modules.length; i++) {
+      var mod = modules[i];
       var slide = pptx.addSlide();
-      // 상단 과정명 헤더
-      slide.addText(courseName, {
-        x: 0.5, y: 0.2, w: 9, h: 0.4,
-        fontSize: 11, fontFace: 'Pretendard', bold: true, color: cPrimary
+
+      // 모듈 제목 (상단 크게)
+      slide.addText(mod.title, {
+        x: 0.8, y: 0.5, w: 8.4, h: 1.0,
+        fontSize: 24, fontFace: 'Pretendard', bold: true, color: cDark,
+        valign: 'middle'
       });
-      slide.addShape(pptx.shapes.RECTANGLE, { x: 0.5, y: 0.65, w: 9, h: 0.02, fill: { color: cBorder } });
+      // 파란 구분선
+      slide.addShape(pptx.shapes.RECTANGLE, { x: 0.8, y: 1.6, w: 8.4, h: 0.04, fill: { color: cPrimary } });
 
-      // 모듈 렌더링 (좌/우 배치)
-      function renderMod(mod, xPos, colW) {
-        // 배지
-        slide.addShape(pptx.shapes.ROUNDED_RECTANGLE, {
-          x: xPos, y: 0.9, w: 1.4, h: 0.35, rectRadius: 0.08,
-          fill: { color: cPrimary }
-        });
-        slide.addText(mod.badge, {
-          x: xPos, y: 0.9, w: 1.4, h: 0.35,
-          fontSize: 10, fontFace: 'Pretendard', bold: true, color: 'FFFFFF',
-          align: 'center', valign: 'middle'
-        });
-        // 모듈 제목
-        slide.addText(mod.title, {
-          x: xPos, y: 1.4, w: colW, h: 0.5,
-          fontSize: 16, fontFace: 'Pretendard', bold: true, color: cDark,
-          valign: 'middle'
-        });
-        // 구분선
-        slide.addShape(pptx.shapes.RECTANGLE, { x: xPos, y: 2.0, w: colW, h: 0.02, fill: { color: cPrimary } });
-        // 세부내용 (각 불렛 한 줄씩)
-        var detailRows = [];
-        mod.details.forEach(function(d) {
-          detailRows.push({ text: 'ㆍ ' + d, options: { fontSize: 11, color: cText, breakType: 'break', paraSpaceAfter: 4 } });
-        });
-        slide.addText(detailRows, {
-          x: xPos, y: 2.2, w: colW, h: 4.6,
-          fontFace: 'Pretendard', valign: 'top', lineSpacingMultiple: 1.2
-        });
-      }
+      // 세부내용 (각 불렛 한 줄씩, 충분한 간격)
+      var detailRows = [];
+      mod.details.forEach(function(d, idx) {
+        detailRows.push({ text: 'ㆍ ' + d, options: { fontSize: 14, color: cText, paraSpaceBefore: idx === 0 ? 0 : 8, paraSpaceAfter: 8, breakType: 'break' } });
+      });
+      slide.addText(detailRows, {
+        x: 0.8, y: 1.9, w: 8.4, h: 4.6,
+        fontFace: 'Pretendard', valign: 'top', lineSpacingMultiple: 1.4
+      });
 
-      var hasTwo = (i + 1 < modules.length);
-      if (hasTwo) {
-        renderMod(modules[i], 0.5, 4.2);
-        slide.addShape(pptx.shapes.RECTANGLE, { x: 4.9, y: 0.85, w: 0.01, h: 5.8, fill: { color: 'E0E0E0' } });
-        renderMod(modules[i + 1], 5.2, 4.2);
-      } else {
-        renderMod(modules[i], 0.5, 9.0);
-      }
-
-      // 하단
+      // 하단: 배지 + 과정명 + 페이지
       slide.addShape(pptx.shapes.RECTANGLE, { x: 0.5, y: 7.05, w: 9, h: 0.01, fill: { color: cBorder } });
-      slide.addText('나눔경영컨설팅', {
-        x: 0.5, y: 7.1, w: 4, h: 0.3,
+      slide.addText(mod.badge + '  |  ' + courseName, {
+        x: 0.5, y: 7.1, w: 6, h: 0.3,
         fontSize: 8, fontFace: 'Pretendard', color: '999999'
       });
-      slide.addText(Math.floor(i / 2 + 2) + ' / ' + totalPages, {
-        x: 6, y: 7.1, w: 3.5, h: 0.3,
+      slide.addText((i + 2) + ' / ' + totalPages, {
+        x: 6.5, y: 7.1, w: 3, h: 0.3,
         fontSize: 8, fontFace: 'Pretendard', color: '999999', align: 'right'
       });
     }
