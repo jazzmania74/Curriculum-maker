@@ -428,6 +428,22 @@ select.input-field { cursor: pointer; }
           <option value="6">6시간 (6모듈)</option>
           <option value="7">7시간 (7모듈)</option>
           <option value="8">8시간 (8모듈)</option>
+          <option value="9">9시간 (9모듈)</option>
+          <option value="10">10시간 (10모듈)</option>
+          <option value="11">11시간 (11모듈)</option>
+          <option value="12">12시간 (12모듈)</option>
+          <option value="13">13시간 (13모듈)</option>
+          <option value="14">14시간 (14모듈)</option>
+          <option value="15">15시간 (15모듈)</option>
+          <option value="16">16시간 (16모듈)</option>
+          <option value="17">17시간 (17모듈)</option>
+          <option value="18">18시간 (18모듈)</option>
+          <option value="19">19시간 (19모듈)</option>
+          <option value="20">20시간 (20모듈)</option>
+          <option value="21">21시간 (21모듈)</option>
+          <option value="22">22시간 (22모듈)</option>
+          <option value="23">23시간 (23모듈)</option>
+          <option value="24">24시간 (24모듈)</option>
         </select>
         <span class="input-hint">시간당 1개 모듈이 생성됩니다.</span>
       </div>
@@ -789,7 +805,7 @@ select.input-field { cursor: pointer; }
       var pf = JSON.parse(prefillJson);
       if (pf.topic) document.getElementById('eduTopic').value = pf.topic;
       if (pf.learner) document.getElementById('eduLearner').value = pf.learner;
-      if (pf.hours) { var hSel = document.getElementById('eduHours'); if (hSel) { var hVal = Math.max(2, Math.min(8, Number(pf.hours))); hSel.value = String(hVal); } }
+      if (pf.hours) { var hSel = document.getElementById('eduHours'); if (hSel) { var hVal = Math.max(2, Math.min(24, Number(pf.hours))); hSel.value = String(hVal); } }
       if (pf.extra) document.getElementById('eduExtra').value = pf.extra;
       if (pf.conversation) document.getElementById('eduConversation').value = pf.conversation;
       localStorage.removeItem('curriculum_prefill');
