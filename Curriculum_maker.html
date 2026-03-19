@@ -826,9 +826,7 @@ select.input-field { cursor: pointer; }
   /* ─── Save: PPT ─── */
   document.getElementById('btnPpt').addEventListener('click', function() {
     var pptx = new PptxGenJS();
-    pptx.layout = 'LAYOUT_WIDE';
-    pptx.defineLayout({ name: 'WIDE16x9', width: 13.33, height: 7.5 });
-    pptx.layout = 'WIDE16x9';
+    pptx.layout = 'LAYOUT_4x3';
 
     var courseName = document.getElementById('outCourseName').textContent;
     var courseCopy = document.getElementById('outCourseCopy').textContent;
@@ -837,55 +835,54 @@ select.input-field { cursor: pointer; }
     var topic = document.getElementById('eduTopic').value.trim();
     var learner = document.getElementById('eduLearner').value.trim();
 
-    /* ── 색상 정의 ── */
-    var cDark = '0D1B2A';
+    /* ── 색상 정의 (인쇄 친화적) ── */
     var cPrimary = '0066CC';
-    var cAccent = '00B67A';
-    var cOrange = 'E67E22';
-    var cWhite = 'FFFFFF';
-    var cLightBg = 'F0F4F8';
-    var cText = '333333';
+    var cDark = '1A1A2E';
+    var cAccent = '00875A';
+    var cOrange = 'D35400';
+    var cText = '222222';
     var cTextLight = '666666';
+    var cBorder = 'CCCCCC';
 
     /* ── 슬라이드 1: 표지 ── */
     var slide1 = pptx.addSlide();
-    slide1.background = { color: cDark };
-    // 좌측 장식 바
-    slide1.addShape(pptx.shapes.RECTANGLE, { x: 0, y: 0, w: 0.15, h: 7.5, fill: { color: cPrimary } });
+    // 상단 얇은 라인
+    slide1.addShape(pptx.shapes.RECTANGLE, { x: 0, y: 0, w: 10, h: 0.06, fill: { color: cPrimary } });
     // 과정명
     slide1.addText(courseName, {
-      x: 0.8, y: 1.2, w: 11.5, h: 1.6,
-      fontSize: 36, fontFace: 'Pretendard', bold: true, color: cWhite,
+      x: 0.8, y: 1.5, w: 8.4, h: 1.4,
+      fontSize: 32, fontFace: 'Pretendard', bold: true, color: cDark,
       valign: 'middle'
     });
     // 카피
     slide1.addText(courseCopy, {
-      x: 0.8, y: 2.9, w: 11.5, h: 0.7,
-      fontSize: 18, fontFace: 'Pretendard', italic: true, color: cPrimary
+      x: 0.8, y: 3.0, w: 8.4, h: 0.6,
+      fontSize: 16, fontFace: 'Pretendard', italic: true, color: cPrimary
     });
     // 구분선
-    slide1.addShape(pptx.shapes.RECTANGLE, { x: 0.8, y: 3.9, w: 4, h: 0.04, fill: { color: cPrimary } });
+    slide1.addShape(pptx.shapes.RECTANGLE, { x: 0.8, y: 3.8, w: 3.5, h: 0.03, fill: { color: cPrimary } });
     // 교육목표
     slide1.addText([
-      { text: '교육목표  ', options: { fontSize: 13, bold: true, color: cAccent } },
-      { text: objective, options: { fontSize: 13, color: 'AABBCC' } }
-    ], { x: 0.8, y: 4.3, w: 11.5, h: 0.5, fontFace: 'Pretendard' });
+      { text: '교육목표  ', options: { fontSize: 12, bold: true, color: cAccent } },
+      { text: objective, options: { fontSize: 12, color: cText } }
+    ], { x: 0.8, y: 4.2, w: 8.4, h: 0.45, fontFace: 'Pretendard' });
     // 기대효과
     slide1.addText([
-      { text: '기대효과  ', options: { fontSize: 13, bold: true, color: cOrange } },
-      { text: effect, options: { fontSize: 13, color: 'AABBCC' } }
-    ], { x: 0.8, y: 4.9, w: 11.5, h: 0.5, fontFace: 'Pretendard' });
+      { text: '기대효과  ', options: { fontSize: 12, bold: true, color: cOrange } },
+      { text: effect, options: { fontSize: 12, color: cText } }
+    ], { x: 0.8, y: 4.7, w: 8.4, h: 0.45, fontFace: 'Pretendard' });
     // 하단 정보
+    slide1.addShape(pptx.shapes.RECTANGLE, { x: 0.8, y: 6.2, w: 8.4, h: 0.01, fill: { color: cBorder } });
     slide1.addText('교육주제: ' + topic + '  |  교육대상: ' + learner, {
-      x: 0.8, y: 6.3, w: 11.5, h: 0.4,
-      fontSize: 11, fontFace: 'Pretendard', color: '778899'
+      x: 0.8, y: 6.35, w: 8.4, h: 0.35,
+      fontSize: 10, fontFace: 'Pretendard', color: cTextLight
     });
     slide1.addText('나눔경영컨설팅 | 김종혁 대표 | 010-2414-3329 | jazzmania74@gmail.com', {
-      x: 0.8, y: 6.8, w: 11.5, h: 0.4,
-      fontSize: 10, fontFace: 'Pretendard', color: '556677'
+      x: 0.8, y: 6.7, w: 8.4, h: 0.35,
+      fontSize: 9, fontFace: 'Pretendard', color: '999999'
     });
 
-    /* ── 슬라이드 2~N: 모듈 (2개씩) ── */
+    /* ── 모듈 데이터 수집 ── */
     var cards = document.querySelectorAll('.module-card');
     var modules = [];
     cards.forEach(function(card) {
@@ -898,64 +895,67 @@ select.input-field { cursor: pointer; }
       modules.push({ badge: badge, title: title, details: details });
     });
 
+    var totalPages = Math.ceil(modules.length / 2) + 1;
+
+    /* ── 슬라이드 2~N: 모듈 (2개씩) ── */
     for (var i = 0; i < modules.length; i += 2) {
       var slide = pptx.addSlide();
-      slide.background = { color: cWhite };
-      // 상단 헤더 바
-      slide.addShape(pptx.shapes.RECTANGLE, { x: 0, y: 0, w: 13.33, h: 0.6, fill: { color: cDark } });
+      // 상단 과정명 헤더
       slide.addText(courseName, {
-        x: 0.5, y: 0, w: 10, h: 0.6,
-        fontSize: 12, fontFace: 'Pretendard', bold: true, color: cWhite, valign: 'middle'
+        x: 0.5, y: 0.2, w: 9, h: 0.4,
+        fontSize: 11, fontFace: 'Pretendard', bold: true, color: cPrimary
       });
+      slide.addShape(pptx.shapes.RECTANGLE, { x: 0.5, y: 0.65, w: 9, h: 0.02, fill: { color: cBorder } });
 
-      // 모듈 렌더링 함수
-      function renderPptModule(mod, xPos) {
+      // 모듈 렌더링 (좌/우 배치)
+      function renderMod(mod, xPos, colW) {
         // 배지
         slide.addShape(pptx.shapes.ROUNDED_RECTANGLE, {
-          x: xPos, y: 1.0, w: 1.6, h: 0.4, rectRadius: 0.1,
+          x: xPos, y: 0.9, w: 1.4, h: 0.35, rectRadius: 0.08,
           fill: { color: cPrimary }
         });
         slide.addText(mod.badge, {
-          x: xPos, y: 1.0, w: 1.6, h: 0.4,
-          fontSize: 11, fontFace: 'Pretendard', bold: true, color: cWhite,
+          x: xPos, y: 0.9, w: 1.4, h: 0.35,
+          fontSize: 10, fontFace: 'Pretendard', bold: true, color: 'FFFFFF',
           align: 'center', valign: 'middle'
         });
         // 모듈 제목
         slide.addText(mod.title, {
-          x: xPos, y: 1.6, w: 5.5, h: 0.6,
-          fontSize: 18, fontFace: 'Pretendard', bold: true, color: cDark,
+          x: xPos, y: 1.4, w: colW, h: 0.5,
+          fontSize: 16, fontFace: 'Pretendard', bold: true, color: cDark,
           valign: 'middle'
         });
         // 구분선
-        slide.addShape(pptx.shapes.RECTANGLE, { x: xPos, y: 2.3, w: 5.5, h: 0.03, fill: { color: cPrimary } });
-        // 세부내용
+        slide.addShape(pptx.shapes.RECTANGLE, { x: xPos, y: 2.0, w: colW, h: 0.02, fill: { color: cPrimary } });
+        // 세부내용 (각 불렛 한 줄씩)
         var detailRows = [];
         mod.details.forEach(function(d) {
-          detailRows.push({ text: 'ㆍ ' + d, options: { fontSize: 12, color: cText, bullet: false, paraSpaceAfter: 6 } });
+          detailRows.push({ text: 'ㆍ ' + d, options: { fontSize: 11, color: cText, breakType: 'break', paraSpaceAfter: 4 } });
         });
         slide.addText(detailRows, {
-          x: xPos, y: 2.5, w: 5.5, h: 4.2,
-          fontFace: 'Pretendard', valign: 'top', lineSpacingMultiple: 1.3
+          x: xPos, y: 2.2, w: colW, h: 4.6,
+          fontFace: 'Pretendard', valign: 'top', lineSpacingMultiple: 1.2
         });
       }
 
-      // 좌측 모듈
-      renderPptModule(modules[i], 0.6);
-      // 우측 모듈 (있을 경우)
-      if (i + 1 < modules.length) {
-        // 중앙 구분선
-        slide.addShape(pptx.shapes.RECTANGLE, { x: 6.55, y: 0.9, w: 0.02, h: 6.0, fill: { color: 'DEE2E6' } });
-        renderPptModule(modules[i + 1], 7.0);
+      var hasTwo = (i + 1 < modules.length);
+      if (hasTwo) {
+        renderMod(modules[i], 0.5, 4.2);
+        slide.addShape(pptx.shapes.RECTANGLE, { x: 4.9, y: 0.85, w: 0.01, h: 5.8, fill: { color: 'E0E0E0' } });
+        renderMod(modules[i + 1], 5.2, 4.2);
+      } else {
+        renderMod(modules[i], 0.5, 9.0);
       }
 
-      // 하단 페이지 번호
+      // 하단
+      slide.addShape(pptx.shapes.RECTANGLE, { x: 0.5, y: 7.05, w: 9, h: 0.01, fill: { color: cBorder } });
       slide.addText('나눔경영컨설팅', {
-        x: 0.5, y: 7.0, w: 4, h: 0.35,
-        fontSize: 9, fontFace: 'Pretendard', color: '999999'
+        x: 0.5, y: 7.1, w: 4, h: 0.3,
+        fontSize: 8, fontFace: 'Pretendard', color: '999999'
       });
-      slide.addText(Math.floor(i / 2 + 2) + ' / ' + (Math.ceil(modules.length / 2) + 1), {
-        x: 9, y: 7.0, w: 3.8, h: 0.35,
-        fontSize: 9, fontFace: 'Pretendard', color: '999999', align: 'right'
+      slide.addText(Math.floor(i / 2 + 2) + ' / ' + totalPages, {
+        x: 6, y: 7.1, w: 3.5, h: 0.3,
+        fontSize: 8, fontFace: 'Pretendard', color: '999999', align: 'right'
       });
     }
 
