@@ -577,8 +577,9 @@ select.input-field { cursor: pointer; }
       '2. copy: 홍보용 카피 1줄 (빈칸 포함 30자 이내, 임팩트 있게)\n' +
       '3. objective: 교육목표 1줄 (빈칸 포함 30자 이내)\n' +
       '4. effect: 기대효과 1줄 (빈칸 포함 30자 이내)\n' +
-      '5. modules 배열: 교육시간 수만큼 모듈 생성\n' +
-      '   - title: 모듈명 (빈칸 포함 20자 이내)\n' +
+      '5. modules 배열: 교육시간 수만큼 모듈 생성 (반드시 정확히 교육시간 수와 동일한 개수)\n' +
+      '   - 하루 기준은 8시간. 9시간 이상이면 여러 일차로 나뉨 (예: 20시간 = 1일차 8h + 2일차 8h + 3일차 4h)\n' +
+      '   - title: 모듈명 (빈칸 포함 20자 이내). 여러 일차인 경우 title 앞에 일차를 표기하지 마세요\n' +
       '   - details: 세부내용 배열, 정확히 6개\n' +
       '     ★ 각 항목은 반드시 30~55자 사이로 구체적이고 상세하게 작성. 55자 초과 금지\n' +
       '     ★ 짧은 단어 나열 금지. 핵심 키워드에 구체적 내용, 도구명, 방법론, 산출물을 충분히 덧붙여 길게 작성\n' +
@@ -667,7 +668,9 @@ select.input-field { cursor: pointer; }
 
       var badge = document.createElement('div');
       badge.className = 'module-hour-badge';
-      badge.textContent = (idx + 1) + '시간차';
+      var dayNum = Math.floor(idx / 8) + 1;
+      var totalDays = Math.ceil(modules.length / 8);
+      badge.textContent = totalDays > 1 ? dayNum + '일차 ' + (idx + 1) + '시간차' : (idx + 1) + '시간차';
 
       var titleEl = document.createElement('div');
       titleEl.className = 'module-title';
