@@ -911,14 +911,12 @@ select.input-field { cursor: pointer; }
       // 파란 구분선
       slide.addShape(pptx.shapes.RECTANGLE, { x: 0.8, y: 1.6, w: 8.4, h: 0.04, fill: { color: cPrimary } });
 
-      // 세부내용 (각 불렛 한 줄씩, 충분한 간격)
-      var detailRows = [];
-      mod.details.forEach(function(d, idx) {
-        detailRows.push({ text: 'ㆍ ' + d, options: { fontSize: 11, color: cText, paraSpaceBefore: idx === 0 ? 0 : 14, breakType: 'break' } });
-      });
-      slide.addText(detailRows, {
+      // 세부내용 (각 불렛 한 줄씩 — \n으로 줄바꿈)
+      var detailText = mod.details.map(function(d) { return 'ㆍ ' + d; }).join('\n\n');
+      slide.addText(detailText, {
         x: 0.8, y: 1.9, w: 8.4, h: 4.8,
-        fontFace: 'Pretendard', valign: 'top', lineSpacingMultiple: 1.3
+        fontSize: 11, fontFace: 'Pretendard', color: cText,
+        valign: 'top', lineSpacingMultiple: 1.5
       });
 
       // 하단: 배지 + 과정명 + 페이지
