@@ -7,6 +7,7 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/gh/gitbrent/PptxGenJS@3.12.0/dist/pptxgen.bundle.js"></script>
 </head>
 <body>
 <style>
@@ -256,6 +257,12 @@ select.input-field { cursor: pointer; }
   margin-top: 24px; margin-bottom: 8px;
 }
 .save-btn-row.visible { display: flex; flex-wrap: wrap; }
+.btn-ppt {
+  display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px;
+  background: #E67E22; color: #fff; border: none; border-radius: var(--radius-sm);
+  font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s;
+}
+.btn-ppt:hover { background: #CF6D17; }
 .btn-pdf {
   display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px;
   background: var(--primary-dark); color: #fff; border: none; border-radius: var(--radius-sm);
@@ -514,6 +521,7 @@ select.input-field { cursor: pointer; }
 
   <!-- Save -->
   <div class="save-btn-row" id="currSaveBtns">
+    <button class="btn-ppt" id="btnPpt">📊 PPT로 저장</button>
     <button class="btn-pdf" id="btnPdf">📄 PDF로 저장</button>
     <button class="btn-html" id="btnHtml">💾 HTML로 저장</button>
     <button class="btn-copy" id="btnCopy">📋 텍스트 복사</button>
@@ -814,6 +822,147 @@ select.input-field { cursor: pointer; }
       localStorage.removeItem('curriculum_prefill');
     }
   } catch(e) {}
+
+  /* ─── Save: PPT ─── */
+  document.getElementById('btnPpt').addEventListener('click', function() {
+    var pptx = new PptxGenJS();
+    pptx.layout = 'LAYOUT_WIDE';
+    pptx.defineLayout({ name: 'WIDE16x9', width: 13.33, height: 7.5 });
+    pptx.layout = 'WIDE16x9';
+
+    var courseName = document.getElementById('outCourseName').textContent;
+    var courseCopy = document.getElementById('outCourseCopy').textContent;
+    var objective = document.getElementById('outObjective').textContent;
+    var effect = document.getElementById('outEffect').textContent;
+    var topic = document.getElementById('eduTopic').value.trim();
+    var learner = document.getElementById('eduLearner').value.trim();
+
+    /* ── 색상 정의 ── */
+    var cDark = '0D1B2A';
+    var cPrimary = '0066CC';
+    var cAccent = '00B67A';
+    var cOrange = 'E67E22';
+    var cWhite = 'FFFFFF';
+    var cLightBg = 'F0F4F8';
+    var cText = '333333';
+    var cTextLight = '666666';
+
+    /* ── 슬라이드 1: 표지 ── */
+    var slide1 = pptx.addSlide();
+    slide1.background = { color: cDark };
+    // 좌측 장식 바
+    slide1.addShape(pptx.shapes.RECTANGLE, { x: 0, y: 0, w: 0.15, h: 7.5, fill: { color: cPrimary } });
+    // 과정명
+    slide1.addText(courseName, {
+      x: 0.8, y: 1.2, w: 11.5, h: 1.6,
+      fontSize: 36, fontFace: 'Pretendard', bold: true, color: cWhite,
+      valign: 'middle'
+    });
+    // 카피
+    slide1.addText(courseCopy, {
+      x: 0.8, y: 2.9, w: 11.5, h: 0.7,
+      fontSize: 18, fontFace: 'Pretendard', italic: true, color: cPrimary
+    });
+    // 구분선
+    slide1.addShape(pptx.shapes.RECTANGLE, { x: 0.8, y: 3.9, w: 4, h: 0.04, fill: { color: cPrimary } });
+    // 교육목표
+    slide1.addText([
+      { text: '교육목표  ', options: { fontSize: 13, bold: true, color: cAccent } },
+      { text: objective, options: { fontSize: 13, color: 'AABBCC' } }
+    ], { x: 0.8, y: 4.3, w: 11.5, h: 0.5, fontFace: 'Pretendard' });
+    // 기대효과
+    slide1.addText([
+      { text: '기대효과  ', options: { fontSize: 13, bold: true, color: cOrange } },
+      { text: effect, options: { fontSize: 13, color: 'AABBCC' } }
+    ], { x: 0.8, y: 4.9, w: 11.5, h: 0.5, fontFace: 'Pretendard' });
+    // 하단 정보
+    slide1.addText('교육주제: ' + topic + '  |  교육대상: ' + learner, {
+      x: 0.8, y: 6.3, w: 11.5, h: 0.4,
+      fontSize: 11, fontFace: 'Pretendard', color: '778899'
+    });
+    slide1.addText('나눔경영컨설팅 | 김종혁 대표 | 010-2414-3329 | jazzmania74@gmail.com', {
+      x: 0.8, y: 6.8, w: 11.5, h: 0.4,
+      fontSize: 10, fontFace: 'Pretendard', color: '556677'
+    });
+
+    /* ── 슬라이드 2~N: 모듈 (2개씩) ── */
+    var cards = document.querySelectorAll('.module-card');
+    var modules = [];
+    cards.forEach(function(card) {
+      var badge = card.querySelector('.module-hour-badge').textContent;
+      var title = card.querySelector('.module-title').textContent.trim();
+      var details = [];
+      card.querySelectorAll('.module-detail-item span:last-child').forEach(function(sp) {
+        details.push(sp.textContent);
+      });
+      modules.push({ badge: badge, title: title, details: details });
+    });
+
+    for (var i = 0; i < modules.length; i += 2) {
+      var slide = pptx.addSlide();
+      slide.background = { color: cWhite };
+      // 상단 헤더 바
+      slide.addShape(pptx.shapes.RECTANGLE, { x: 0, y: 0, w: 13.33, h: 0.6, fill: { color: cDark } });
+      slide.addText(courseName, {
+        x: 0.5, y: 0, w: 10, h: 0.6,
+        fontSize: 12, fontFace: 'Pretendard', bold: true, color: cWhite, valign: 'middle'
+      });
+
+      // 모듈 렌더링 함수
+      function renderPptModule(mod, xPos) {
+        // 배지
+        slide.addShape(pptx.shapes.ROUNDED_RECTANGLE, {
+          x: xPos, y: 1.0, w: 1.6, h: 0.4, rectRadius: 0.1,
+          fill: { color: cPrimary }
+        });
+        slide.addText(mod.badge, {
+          x: xPos, y: 1.0, w: 1.6, h: 0.4,
+          fontSize: 11, fontFace: 'Pretendard', bold: true, color: cWhite,
+          align: 'center', valign: 'middle'
+        });
+        // 모듈 제목
+        slide.addText(mod.title, {
+          x: xPos, y: 1.6, w: 5.5, h: 0.6,
+          fontSize: 18, fontFace: 'Pretendard', bold: true, color: cDark,
+          valign: 'middle'
+        });
+        // 구분선
+        slide.addShape(pptx.shapes.RECTANGLE, { x: xPos, y: 2.3, w: 5.5, h: 0.03, fill: { color: cPrimary } });
+        // 세부내용
+        var detailRows = [];
+        mod.details.forEach(function(d) {
+          detailRows.push({ text: 'ㆍ ' + d, options: { fontSize: 12, color: cText, bullet: false, paraSpaceAfter: 6 } });
+        });
+        slide.addText(detailRows, {
+          x: xPos, y: 2.5, w: 5.5, h: 4.2,
+          fontFace: 'Pretendard', valign: 'top', lineSpacingMultiple: 1.3
+        });
+      }
+
+      // 좌측 모듈
+      renderPptModule(modules[i], 0.6);
+      // 우측 모듈 (있을 경우)
+      if (i + 1 < modules.length) {
+        // 중앙 구분선
+        slide.addShape(pptx.shapes.RECTANGLE, { x: 6.55, y: 0.9, w: 0.02, h: 6.0, fill: { color: 'DEE2E6' } });
+        renderPptModule(modules[i + 1], 7.0);
+      }
+
+      // 하단 페이지 번호
+      slide.addText('나눔경영컨설팅', {
+        x: 0.5, y: 7.0, w: 4, h: 0.35,
+        fontSize: 9, fontFace: 'Pretendard', color: '999999'
+      });
+      slide.addText(Math.floor(i / 2 + 2) + ' / ' + (Math.ceil(modules.length / 2) + 1), {
+        x: 9, y: 7.0, w: 3.8, h: 0.35,
+        fontSize: 9, fontFace: 'Pretendard', color: '999999', align: 'right'
+      });
+    }
+
+    /* ── 파일 저장 ── */
+    var fileName = 'Curriculum_' + topic.replace(/\s+/g, '_') + '_' + new Date().toISOString().slice(0, 10);
+    pptx.writeFile({ fileName: fileName });
+  });
 
   /* ─── Save: PDF ─── */
   document.getElementById('btnPdf').addEventListener('click', function(){ window.print(); });
